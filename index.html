@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Video Embed</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lite-youtube-embed@0.3.2/src/lite-yt-embed.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 900px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+        }
+
+        .controls {
+            margin-bottom: 30px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .controls input {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .controls input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .controls button {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .controls button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .controls button:active {
+            transform: translateY(0);
+        }
+
+        .video-wrapper {
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        lite-youtube {
+            border-radius: 10px;
+            max-width: 100%;
+        }
+
+        .description {
+            margin-top: 30px;
+            text-align: center;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .description h2 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .description code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .playlist-section {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #f0f0f0;
+        }
+
+        .playlist-section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+
+        .playlist-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .playlist-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .playlist-item:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .playlist-item-thumbnail {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .playlist-item-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .playlist-item-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .playlist-item-id {
+            font-size: 12px;
+            color: #666;
+            font-family: 'Courier New', monospace;
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .playlist-item-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .btn-small {
+            padding: 5px 10px;
+            font-size: 12px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-play {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-play:hover {
+            background: #5568d3;
+        }
+
+        .btn-delete {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #ee5a5a;
+        }
+
+        .empty-playlist {
+            text-align: center;
+            color: #999;
+            padding: 30px;
+            font-style: italic;
+        }
+
+        .playlist-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .btn-clear-all {
+            padding: 8px 15px;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-clear-all:hover {
+            background: #ee5a5a;
+            transform: translateY(-1px);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .playlist-items {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎬 YouTube Video Player</h1>
+        
+        <div class="controls">
+            <input 
+                type="text" 
+                id="videoId" 
+                placeholder="Masukkan YouTube Video ID (contoh: dQw4w9WgXcQ)"
+                value="">
+            <button onclick="changeVideo()">Load Video</button>
+            <button onclick="addToPlaylist()">Add to Playlist</button>
+        </div>
+
+        <div class="video-wrapper" id="videoWrapper">
+        </div>
+
+        <div class="description">
+            <h2>Cara Menggunakan</h2>
+            <p>
+                Masukkan ID video YouTube di kotak input di atas.<br>
+                Klik <strong>Load Video</strong> untuk memutar video atau <strong>Add to Playlist</strong> untuk menyimpan ke playlist lokal.<br>
+                ID video bisa diambil dari URL YouTube setelah <code>watch?v=</code><br>
+                Contoh: <code>https://www.youtube.com/watch?v=dQw4w9WgXcQ</code> → ID: <code>dQw4w9WgXcQ</code>
+            </p>
+        </div>
+
+        <!-- Playlist Section -->
+        <div class="playlist-section" id="playlistSection" style="display: none;">
+            <div class="playlist-controls">
+                <h2>📝 My Playlist</h2>
+                <button class="btn-clear-all" onclick="clearAllPlaylist()">Clear All</button>
+            </div>
+            <div class="playlist-items" id="playlistItems"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/lite-youtube-embed@0.3.2/src/lite-yt-embed.js"></script>
+    <script>
+        const PLAYLIST_KEY = 'youtube_playlist';
+
+        // Load playlist when page loads
+        window.addEventListener('DOMContentLoaded', function() {
+            loadPlaylistFromStorage();
+        });
+
+        function changeVideo() {
+            const videoId = document.getElementById('videoId').value.trim();
+            
+            if (!videoId) {
+                alert('Mohon masukkan Video ID!');
+                return;
+            }
+
+            updatePlayer(videoId);
+        }
+
+        function updatePlayer(videoId) {
+            const wrapper = document.getElementById('videoWrapper');
+            
+            // Clear existing content
+            wrapper.innerHTML = '';
+            
+            // Create new player
+            const newPlayer = document.createElement('lite-youtube');
+            newPlayer.id = 'youtubePlayer';
+            newPlayer.setAttribute('videoid', videoId);
+            
+            wrapper.appendChild(newPlayer);
+        }
+
+        function addToPlaylist() {
+            const videoId = document.getElementById('videoId').value.trim();
+            
+            if (!videoId) {
+                alert('Mohon masukkan Video ID!');
+                return;
+            }
+
+            // Get existing playlist
+            let playlist = JSON.parse(localStorage.getItem(PLAYLIST_KEY)) || [];
+            
+            // Check if video already exists
+            if (playlist.includes(videoId)) {
+                alert('Video sudah ada di playlist!');
+                return;
+            }
+
+            // Add to playlist
+            playlist.push(videoId);
+            localStorage.setItem(PLAYLIST_KEY, JSON.stringify(playlist));
+            
+            // Reload playlist display
+            loadPlaylistFromStorage();
+            
+            alert('Video berhasil ditambahkan ke playlist!');
+        }
+
+        function loadPlaylistFromStorage() {
+            const playlist = JSON.parse(localStorage.getItem(PLAYLIST_KEY)) || [];
+            const playlistSection = document.getElementById('playlistSection');
+            const playlistItems = document.getElementById('playlistItems');
+            
+            if (playlist.length === 0) {
+                playlistSection.style.display = 'none';
+                return;
+            }
+
+            playlistSection.style.display = 'block';
+            playlistItems.innerHTML = '';
+            
+            playlist.forEach((videoId, index) => {
+                const item = createPlaylistItem(videoId, index);
+                playlistItems.appendChild(item);
+            });
+        }
+
+        function createPlaylistItem(videoId, index) {
+            const div = document.createElement('div');
+            div.className = 'playlist-item';
+            
+            div.innerHTML = `
+                <div class="playlist-item-thumbnail" onclick="playFromPlaylist('${videoId}')">
+                    <img src="https://i.ytimg.com/vi/${videoId}/mqdefault.jpg" alt="Thumbnail">
+                </div>
+                <div class="playlist-item-info">
+                    <div class="playlist-item-id" title="${videoId}">${videoId}</div>
+                    <div class="playlist-item-actions">
+                        <button class="btn-small btn-play" onclick="playFromPlaylist('${videoId}')">▶</button>
+                        <button class="btn-small btn-delete" onclick="deleteFromPlaylist(${index})">✕</button>
+                    </div>
+                </div>
+            `;
+            
+            return div;
+        }
+
+        function playFromPlaylist(videoId) {
+            document.getElementById('videoId').value = videoId;
+            updatePlayer(videoId);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function deleteFromPlaylist(index) {
+            if (!confirm('Hapus video ini dari playlist?')) {
+                return;
+            }
+
+            let playlist = JSON.parse(localStorage.getItem(PLAYLIST_KEY)) || [];
+            playlist.splice(index, 1);
+            localStorage.setItem(PLAYLIST_KEY, JSON.stringify(playlist));
+            
+            loadPlaylistFromStorage();
+        }
+
+        function clearAllPlaylist() {
+            if (!confirm('Hapus semua video dari playlist?')) {
+                return;
+            }
+
+            localStorage.removeItem(PLAYLIST_KEY);
+            loadPlaylistFromStorage();
+        }
+
+        // Allow Enter key to trigger video change
+        document.getElementById('videoId').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                changeVideo();
+            }
+        });
+    </script>
+</body>
+</html>
